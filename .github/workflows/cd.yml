@@ -38,7 +38,7 @@ jobs:
       - name: Build & push Web
         uses: docker/build-push-action@v6
         with:
-          context: .
+          context: ./logiops_interface  
           file: ./logiops_interface/Dockerfile
           push: true
           tags: |
