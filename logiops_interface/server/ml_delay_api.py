@@ -55,14 +55,26 @@ def list_items():
     lim = int(request.args.get("limit", 40))
 
     q = text("""
-        SELECT shipment_id, origin, destination_zone, carrier, service_level,
-               distance_km, weight_kg, volume_m3, total_units, n_lines,
-               ship_dow, ship_hour, ship_dt, sla_hours
-        FROM fv_train_eta
-        WHERE shipment_id IS NOT NULL
-        ORDER BY ship_dt DESC NULLS LAST
-        LIMIT :lim
-    """)
+        SELECT shipment_id,
+       origin,
+       destination_zone,
+       carrier,
+       service_level,
+       distance_km,
+       weight_kg,
+       volume_m3,
+       total_units,
+       n_lines,
+       ship_dow,
+       ship_hour,
+       make_date(2025, extract(month from ship_dt)::int, extract(day from ship_dt)::int)
+         + (ship_dt::time) AS ship_dt,
+       sla_hours
+    FROM fv_train_eta
+    WHERE shipment_id IS NOT NULL
+    LIMIT :lim;
+ 
+    """) 
 
     with eng.connect() as c:
         df = pd.read_sql(q, c, params={"lim": lim})

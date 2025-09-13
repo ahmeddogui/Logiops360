@@ -6,9 +6,6 @@ Flask-JWT-Extended==4.6.0
 passlib[bcrypt]==1.7.4
 python-dotenv==1.0.1
 pandas
-joblib==1.4.2
-scikit-learn==1.5.2
+joblib
+scikit-learn
 lightgbm
-gunicorn==21.2.0
-numpy==1.26.4
-scipy==1.11.4

@@ -4,7 +4,7 @@ import os
 from datetime import timedelta
 
 from ml_eta_api import bp_eta
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, make_response
 from flask_cors import CORS
 from flask_jwt_extended import (
     JWTManager,
@@ -13,7 +13,6 @@ from flask_jwt_extended import (
     jwt_required,
 )
 from sqlalchemy import create_engine, text
-# sqlalchemy.orm
 from sqlalchemy.orm import scoped_session, sessionmaker
 from passlib.hash import bcrypt
 import pandas as pd
@@ -31,7 +30,7 @@ from storage_api import bp as bp_storage
 # Configuration
 # ----------------------------------------------------------------------------
 DB_USER = os.getenv("DB_USER", "postgres")
-DB_PASS = os.getenv("DB_PASS", "313055")
+DB_PASS = os.getenv("DB_PASS", "kdh")
 DB_HOST = os.getenv("DB_HOST", "localhost")
 DB_PORT = os.getenv("DB_PORT", "5432")
 DB_NAME = os.getenv("DB_NAME", "logiops")
@@ -41,7 +40,6 @@ DATABASE_URL = (
 )
 
 JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "change-me-in-prod")
-CORS_ORIGIN = os.getenv("CORS_ORIGIN", "http://localhost:8080")
 
 # ----------------------------------------------------------------------------
 # App / DB / Auth setup
@@ -50,18 +48,13 @@ app = Flask(__name__)
 app.config["JWT_SECRET_KEY"] = JWT_SECRET_KEY
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=12)
 
-# CORS (autorise localhost ET 127.0.0.1 + header Authorization)
 CORS(
     app,
-    resources={
-        r"/api/*": {
-            "origins": ["http://localhost:8080", "http://127.0.0.1:8080", CORS_ORIGIN]
-        }
-    },
+    resources={r"/api/*": {"origins": ["http://localhost:8080", "http://127.0.0.1:8080"]}},
     supports_credentials=True,
+    allow_headers=["*"],
+    expose_headers=["*"],
     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers=["Content-Type", "Authorization","Cache-Control"],
-    expose_headers=["Content-Type", "Authorization"]
 )
 
 jwt = JWTManager(app)
@@ -80,11 +73,13 @@ app.register_blueprint(bp_anom)
 app.register_blueprint(bp_kpi)
 app.register_blueprint(bp_orders_forecast)
 app.register_blueprint(bp_storage)
+
 print("\n=== ROUTES DISPONIBLES ===")
 for rule in app.url_map.iter_rules():
     methods = ",".join(sorted(rule.methods))
     print(f"{rule.endpoint:30s} {methods:20s} {rule.rule}")
 print("====================================\n")
+
 # ----------------------------------------------------------------------------
 # Helpers
 # ----------------------------------------------------------------------------
@@ -103,7 +98,6 @@ def validate_profile(value: str) -> str:
 # Routes
 # ----------------------------------------------------------------------------
 
-
 @app.get("/api/health")
 def health():
     try:
@@ -113,34 +107,12 @@ def health():
     except Exception as e:
         return jsonify(status="error", error=str(e)), 500
 
+
 @app.get("/api/supervisor/charts")
 def supervisor_charts():
-    """Récupère les données pour les graphiques du dashboard superviseur"""
+    """Données pour le dashboard commandes"""
     try:
         with engine.connect() as conn:
-            # Graphe 1 : Top 10 points de stockage par volume
-            top_storage_sql = """
-                SELECT l.label, SUM(sl.volume) as total_volume
-                FROM public.clean_support_points l
-                JOIN public.clean_storage_location sl
-                  ON l.label = sl.support_label
-                GROUP BY l.label
-                ORDER BY total_volume DESC
-                LIMIT 10
-            """
-            top_storage = [dict(row._mapping) for row in conn.execute(text(top_storage_sql)).fetchall()]
-
-            # Graphe 2 : Vue des stocks (quantité totale) sans valeurs à zéro
-            stock_view_sql = """
-                SELECT referenceproduit,
-                       (qty_class_based + qty_dedicated + qty_random) as total_qty
-                FROM public.unified_storage_view
-                WHERE (qty_class_based + qty_dedicated + qty_random) > 0
-                ORDER BY total_qty DESC
-            """
-            stock_view = [dict(row._mapping) for row in conn.execute(text(stock_view_sql)).fetchall()]
-
-            # Données des commandes par jour (derniers 7 jours)
             orders_trend_sql = """
                 SELECT 
                     DATE(creationdate) as date,
@@ -153,7 +125,6 @@ def supervisor_charts():
             """
             orders_trend = [dict(row._mapping) for row in conn.execute(text(orders_trend_sql)).fetchall()]
 
-            # Répartition par client
             customer_orders_sql = """
                 SELECT 
                     codcustomer,
@@ -164,11 +135,9 @@ def supervisor_charts():
                 GROUP BY codcustomer
                 ORDER BY orders_count DESC
                 LIMIT 10
-            
             """
             customer_orders = [dict(row._mapping) for row in conn.execute(text(customer_orders_sql)).fetchall()]
 
-            # Volume par taille
             size_distribution_sql = """
                 SELECT 
                     size_us,
@@ -182,7 +151,6 @@ def supervisor_charts():
             """
             size_distribution = [dict(row._mapping) for row in conn.execute(text(size_distribution_sql)).fetchall()]
 
-            # Performance par opérateur
             operator_performance_sql = """
                 SELECT 
                     operator,
@@ -199,23 +167,146 @@ def supervisor_charts():
             operator_performance = [dict(row._mapping)
                                     for row in conn.execute(text(operator_performance_sql)).fetchall()]
 
-            return jsonify(
-                orders_trend=orders_trend,
-                customer_orders=customer_orders,
-                size_distribution=size_distribution,
-                operator_performance=operator_performance,
-                top_storage=top_storage,
-                stock_view=stock_view
-            ), 200
+        return jsonify(
+            orders_trend=orders_trend,
+            customer_orders=customer_orders,
+            size_distribution=size_distribution,
+            operator_performance=operator_performance
+        ), 200
 
     except Exception as e:
         return jsonify(error=str(e)), 500
 
-@app.post("/api/auth/signup")
-def signup():
+
+@app.get("/api/storage/analytics")
+def storage_analytics():
+    """Données analytiques pour le dashboard Stockage"""
+    try:
+        with engine.connect() as conn:
+            class_sql = """
+                SELECT class, COUNT(*) as nb_products, SUM(quantity) as total_qty
+                FROM public.clean_class_based_storage
+                GROUP BY class
+                ORDER BY nb_products DESC
+            """
+            class_distribution = [dict(row._mapping) for row in conn.execute(text(class_sql)).fetchall()]
+
+            top_storage_sql = """
+                SELECT sp.label,
+                       SUM(sl.volume) as total_volume,
+                       MAX(sp.x_coord) as x_coord,
+                       MAX(sp.y_coord) as y_coord,
+                       MAX(sp.z_coord) as z_coord,
+                       MAX(sp.norm) as norm
+                FROM public.clean_storage_location sl
+                JOIN public.clean_support_points sp
+                  ON sl.support_label = sp.label
+                GROUP BY sp.label
+                ORDER BY total_volume DESC
+                LIMIT 10
+            """
+            top_storage_points = [dict(row._mapping) for row in conn.execute(text(top_storage_sql)).fetchall()]
+
+        return jsonify(
+            class_distribution=class_distribution,
+            top_storage_points=top_storage_points
+        ), 200
+    except Exception as e:
+        return jsonify(error=str(e)), 500
+
+
+@app.get("/api/transport/charts")
+def transport_charts():
+    """Données analytiques pour le dashboard transport"""
+    try:
+        with engine.connect() as conn:
+            # Livraisons par zone de destination
+            deliveries_sql = """
+                SELECT 
+                    destination_zone,
+                    COUNT(*) AS deliveries_count
+                FROM public.shipments
+                WHERE delivery_datetime IS NOT NULL
+                GROUP BY destination_zone
+                ORDER BY deliveries_count DESC
+            """
+            deliveries_by_zone = [dict(row._mapping) for row in conn.execute(text(deliveries_sql)).fetchall()]
+
+            # Frais moyens par transporteur
+            cost_sql = """
+                SELECT 
+                    carrier,
+                    ROUND(AVG(cost_estimated),2) AS avg_cost
+                FROM public.shipments
+                WHERE cost_estimated IS NOT NULL
+                GROUP BY carrier
+                ORDER BY avg_cost DESC
+            """
+            avg_cost_by_carrier = [dict(row._mapping) for row in conn.execute(text(cost_sql)).fetchall()]
+
+        return jsonify(
+            deliveries_by_zone=deliveries_by_zone,
+            avg_cost_by_carrier=avg_cost_by_carrier
+        ), 200
+    except Exception as e:
+        return jsonify(error=str(e)), 500
+
+
+# ----------------------------------------------------------------------------
+# Auth routes avec gestion OPTIONS
+# ----------------------------------------------------------------------------
+
+@app.route("/api/auth/login", methods=["POST", "OPTIONS"])
+def login():
+    if request.method == "OPTIONS":
+        # Réponse CORS pour le préflight
+        resp = make_response("", 200)
+        resp.headers["Access-Control-Allow-Origin"] = "*"
+        resp.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+        resp.headers["Access-Control-Allow-Methods"] = "POST, OPTIONS"
+        return resp
+
     data = request.get_json(force=True) or {}
-    # 🔹 Log côté serveur pour vérifier ce que Flask reçoit
-    print("Données reçues pour signup:", data)
+    email = (data.get("email") or "").strip().lower()
+    password = data.get("password") or data.get("mot_de_passe") or ""
+    type_profil = data.get("type_profil") or data.get("profile") or ""
+
+    try:
+        type_profil = validate_profile(type_profil)
+    except ValueError as ve:
+        return jsonify(message=str(ve)), 400
+
+    session = SessionLocal()
+    try:
+        user = (
+            session.query(User)
+            .filter(User.email == email, User.type_profil == type_profil)
+            .first()
+        )
+        if not user or not bcrypt.verify(password, user.mot_de_passe_hash):
+            return jsonify(message="Identifiants invalides"), 401
+
+        token = create_access_token(
+            identity=str(user.id),
+            additional_claims={"email": user.email, "type_profil": user.type_profil, "nom": user.nom},
+        )
+        return jsonify(id=str(user.id), nom=user.nom, email=user.email, type_profil=user.type_profil, token=token), 200
+    except Exception as e:
+        return jsonify(message="Erreur serveur", error=str(e)), 500
+    finally:
+        session.close()
+
+
+@app.route("/api/auth/signup", methods=["POST", "OPTIONS"])
+def signup():
+    if request.method == "OPTIONS":
+        resp = make_response("", 200)
+        resp.headers["Access-Control-Allow-Origin"] = "*"
+        resp.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+        resp.headers["Access-Control-Allow-Methods"] = "POST, OPTIONS"
+        return resp
+
+    data = request.get_json(force=True) or {}
     nom = (data.get("nom") or "").strip()
     email = (data.get("email") or "").strip().lower()
     password = data.get("password") or data.get("mot_de_passe") or ""
@@ -237,40 +328,19 @@ def signup():
             .first()
         )
         if existing:
-            return (
-                jsonify(message="Un utilisateur avec cet email et ce profil existe déjà"),
-                409,
-            )
+            return jsonify(message="Un utilisateur avec cet email et ce profil existe déjà"), 409
 
         pwd_hash = bcrypt.hash(password)
-        user = User(
-            nom=nom,
-            email=email,
-            mot_de_passe_hash=pwd_hash,
-            type_profil=type_profil,
-        )
+        user = User(nom=nom, email=email, mot_de_passe_hash=pwd_hash, type_profil=type_profil)
         session.add(user)
         session.commit()
         session.refresh(user)
 
         token = create_access_token(
             identity=str(user.id),
-            additional_claims={
-                "email": user.email,
-                "type_profil": user.type_profil,
-                "nom": user.nom,
-            },
+            additional_claims={"email": user.email, "type_profil": user.type_profil, "nom": user.nom},
         )
-        return (
-            jsonify(
-                id=str(user.id),
-                nom=user.nom,
-                email=user.email,
-                type_profil=user.type_profil,
-                token=token,
-            ),
-            201,
-        )
+        return jsonify(id=str(user.id), nom=user.nom, email=user.email, type_profil=user.type_profil, token=token), 201
     except Exception as e:
         session.rollback()
         return jsonify(message="Erreur serveur", error=str(e)), 500
@@ -278,85 +348,11 @@ def signup():
         session.close()
 
 
-@app.post("/api/auth/login")
-def login():
-    data = request.get_json(force=True) or {}
-
-    email = (data.get("email") or "").strip().lower()
-    password = data.get("password") or data.get("mot_de_passe") or ""
-    type_profil = data.get("type_profil") or data.get("profile") or ""
-
-    if not email or not password or not type_profil:
-        return jsonify(message="Champs requis manquants"), 400
-
-    try:
-        type_profil = validate_profile(type_profil)
-    except ValueError as ve:
-        return jsonify(message=str(ve)), 400
-
-    session = SessionLocal()
-    try:
-        user = (
-            session.query(User)
-            .filter(User.email == email, User.type_profil == type_profil)
-            .first()
-        )
-        if not user or not bcrypt.verify(password, user.mot_de_passe_hash):
-            return jsonify(message="Identifiants invalides"), 401
-
-        token = create_access_token(
-            identity=str(user.id),
-            additional_claims={
-                "email": user.email,
-                "type_profil": user.type_profil,
-                "nom": user.nom,
-            },
-        )
-        return (
-            jsonify(
-                id=str(user.id),
-                nom=user.nom,
-                email=user.email,
-                type_profil=user.type_profil,
-                token=token,
-            ),
-            200,
-        )
-    except Exception as e:
-        return jsonify(message="Erreur serveur", error=str(e)), 500
-    finally:
-        session.close()
-
-
-@app.get("/api/auth/me")
-@jwt_required()
-def me():
-    user_id = get_jwt_identity()
-    session = SessionLocal()
-    try:
-        user = session.get(User, user_id)
-        if not user:
-            return jsonify(message="Utilisateur introuvable"), 404
-        return (
-            jsonify(
-                id=str(user.id),
-                nom=user.nom,
-                email=user.email,
-                type_profil=user.type_profil,
-                date_creation=user.date_creation.isoformat(),
-            ),
-            200,
-        )
-    finally:
-        session.close()
-
 # ----------------------------------------------------------------------------
 # Main
 # ----------------------------------------------------------------------------
 
-
 def init_db() -> None:
-    """Créer les tables si elles n'existent pas encore."""
     Base.metadata.create_all(bind=engine)
 
 

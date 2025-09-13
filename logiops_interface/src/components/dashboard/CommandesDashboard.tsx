@@ -1,3 +1,4 @@
+//Dashbord commande
 import { useEffect, useState } from "react";
 import {
   ResponsiveContainer,
@@ -9,15 +10,17 @@ import {
   Bar,
   XAxis,
   YAxis,
-  CartesianGrid
+  CartesianGrid,
+  LineChart,
+  Line,
+  ComposedChart
 } from "recharts";
 import KpiCard from "../ml-cards/KpiCard";
 import ForecastTile from "../ml-cards/ForecastTile";
 import OperatorRow, { OperatorItem } from "../ml-cards/OperatorRow";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent} from "@/components/ui/card";
-import {LineChart, Line } from "recharts";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+
 const API = (import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000/api").replace(/\/$/, "");
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#AA336A", "#7B68EE"];
 
 type Tile = { orders?: number; confidence?: number };
 type ForecastResponse = {
@@ -233,32 +236,6 @@ export default function CommandesDashboard() {
 
       {/* === Graphiques de performance (PLACÉS EN BAS) === */}
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Distribution par taille */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Distribution par taille</CardTitle>
-            <CardDescription>Répartition des commandes par taille de produit</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={chartData?.size_distribution || []}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis
-                    dataKey="size_us"
-                    tick={{ fontSize: 12 }}
-                    interval={0}
-                    angle={-45}
-                    textAnchor="end"
-                  />
-                  <YAxis />
-                  <Tooltip formatter={(value: any) => [value, "Commandes"]} />
-                  <Bar dataKey="orders_count" fill="hsl(var(--primary))" />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
 
         {/* Performance des opérateurs */}
         <Card>
@@ -290,13 +267,14 @@ export default function CommandesDashboard() {
                     }}
                   />
                   <Bar dataKey="orders_processed" fill="hsl(var(--primary))" />
-                  <Bar dataKey="waves_handled" fill="hsl(var(--secondary))" />
                 </BarChart>
               </ResponsiveContainer>
             </div>
           </CardContent>
         </Card>
-       <Card>
+
+        {/* Évolution des commandes */}
+        <Card>
           <CardHeader>
             <CardTitle>Évolution des commandes (7 jours)</CardTitle>
             <CardDescription>Volume quotidien et nombre d'opérateurs</CardDescription>
@@ -338,11 +316,10 @@ export default function CommandesDashboard() {
             </div>
           </CardContent>
         </Card>
-{/* Répartition par client */} <Card> <CardHeader> <CardTitle>Top 10 clients (aujourd'hui)</CardTitle> <CardDescription>Répartition des commandes par client</CardDescription> </CardHeader> <CardContent> <div className="h-64"> <ResponsiveContainer width="100%" height="100%"> <BarChart data={chartData?.customer_orders || []}> <CartesianGrid strokeDasharray="3 3" /> <XAxis dataKey="codcustomer" tick={{ fontSize: 10 }} interval={0} angle={-45} textAnchor="end" /> <YAxis tick={{ fontSize: 12 }} /> <Tooltip formatter={(value: any, name: string) => [ value, name === 'orders_count' ? 'Commandes' : 'Quantité totale' ]} /> <Bar dataKey="orders_count" fill="hsl(var(--primary))" /> </BarChart> </ResponsiveContainer> </div> </CardContent> </Card>
 
+        
        
-      
-    </section>
+      </section>
     </div>
   );
 }

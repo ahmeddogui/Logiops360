@@ -164,7 +164,7 @@ def recommend():
       "total_units": 10, "n_lines": 3, "ship_dow": 2, "ship_hour": 10,
       "topk": 5
     }
-    Retourne: best (top 1) + topK (liste) avec score combiné coût+ETA+risque.
+    Retourne: best (top 3) + topK (liste) avec score combiné coût+ETA+risque.
     Garantit une reco même si la lane/service exact n’existe pas (fallbacks).
     """
     _load()
