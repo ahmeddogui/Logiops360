@@ -1,7 +1,7 @@
 # Base de données
 sqlalchemy
 psycopg2-binary
-psycopg2
+
 
 # Traitement de données
 pandas
