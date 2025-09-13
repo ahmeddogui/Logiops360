@@ -1,0 +1,40 @@
+# Node/React
+logiops_interface/node_modules/
+logiops_interface/.next/
+logiops_interface/dist/
+logiops_interface/build/
+npm-debug.log*
+yarn-error.log*
+pnpm-lock.yaml
+yarn.lock
+package-lock.json
+
+# Python
+logiops_back/.venv/
+logiops_back/venv/
+logiops_back/__pycache__/
+logiops_back/.ipynb_checkpoints/
+logiops_back/.pytest_cache/
+logiops_back/*.pyc
+
+# Secrets
+*.env
+.env
+*.env.local
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Fichiers volumineux (ajuste au besoin)
+data/
+datasets/
+models/
+outputs/
+logs/
+*.joblib
+*.pkl
+*.parquet
+*.db
