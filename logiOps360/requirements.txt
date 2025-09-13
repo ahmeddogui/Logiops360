@@ -1,0 +1,21 @@
+# Base de données
+sqlalchemy
+psycopg2-binary
+psycopg2
+
+# Traitement de données
+pandas
+openpyxl
+python-dotenv
+
+# Analyse & visualisation (pour la suite du projet)
+scikit-learn
+matplotlib
+seaborn
+
+# Pour l'environnement Python propre
+ipykernel
+
+flask
+requests
+statsmodels

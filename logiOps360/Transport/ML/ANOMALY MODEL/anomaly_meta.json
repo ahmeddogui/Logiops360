@@ -1,0 +1,38 @@
+{
+  "generated_at": "2025-09-02T19:57:37.644442Z",
+  "view_used": "fv_phase_enriched (filtered phase!='delivered')",
+  "seed": 42,
+  "contamination": 0.05,
+  "threshold_quantile": 0.95,
+  "decision_threshold": 0.9500135966038705,
+  "cat_features": [
+    "phase",
+    "carrier"
+  ],
+  "num_features_base": [
+    "duration_h",
+    "avg_duration_h",
+    "p50_duration_h",
+    "p90_duration_h",
+    "std_duration_h"
+  ],
+  "num_features_derived": [
+    "ratio_p50",
+    "ratio_p90",
+    "diff_avg",
+    "zscore"
+  ],
+  "model_path": "c:\\Users\\ahmed\\OneDrive\\Bureau\\Projet LogiOps360\\logiOps360\\logiOps360\\Transport\\ML\\ANOMALY MODEL\\anomaly_iforest.joblib",
+  "metrics": {
+    "weak_labels_eval_vs_rule": {
+      "precision": 0.4654990185716443,
+      "recall": 0.23266168591049732,
+      "f1": 0.31025460400523297
+    },
+    "rates": {
+      "rule_rate": 0.10009366549333011,
+      "model_rate": 0.05002794857462269
+    }
+  },
+  "notes": "Phase 'delivered' exclue au training et dans la vue SQL."
+}

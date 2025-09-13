@@ -1,0 +1,50 @@
+{
+  "generated_at": "2025-08-31T11:38:52.863126Z",
+  "model_path": "c:\\Users\\ahmed\\OneDrive\\Bureau\\Projet LogiOps360\\logiOps360\\logiOps360\\Transport\\ML\\ETA MODEL\\eta_lgbm.joblib",
+  "features": [
+    "origin",
+    "destination_zone",
+    "carrier",
+    "service_level",
+    "ship_dow",
+    "ship_hour",
+    "distance_km",
+    "weight_kg",
+    "volume_m3",
+    "total_units",
+    "n_lines"
+  ],
+  "categorical": [
+    "origin",
+    "destination_zone",
+    "carrier",
+    "service_level",
+    "ship_dow",
+    "ship_hour"
+  ],
+  "numeric": [
+    "distance_km",
+    "weight_kg",
+    "volume_m3",
+    "total_units",
+    "n_lines"
+  ],
+  "target": "target_eta_hours",
+  "metrics_valid": {
+    "mae": 2.0947981743439494,
+    "rmse": 3.7240546377747803
+  },
+  "metrics_test": {
+    "mae": 2.2222078911348455,
+    "rmse": 4.028635370940329
+  },
+  "algo": "LightGBMRegressor",
+  "params": {
+    "n_estimators": 1200,
+    "learning_rate": 0.03,
+    "num_leaves": 64,
+    "subsample": 0.9,
+    "colsample_bytree": 0.8,
+    "random_state": 42
+  }
+}

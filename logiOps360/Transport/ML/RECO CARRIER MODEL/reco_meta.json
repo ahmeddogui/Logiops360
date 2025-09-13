@@ -1,0 +1,76 @@
+{
+  "generated_at": "2025-08-31T12:34:17.222100Z",
+  "features": [
+    "origin",
+    "destination_zone",
+    "carrier",
+    "service_level",
+    "ship_dow",
+    "ship_hour",
+    "distance_km",
+    "weight_kg",
+    "volume_m3",
+    "total_units",
+    "n_lines",
+    "p50_eta_h",
+    "p90_eta_h",
+    "delay_rate",
+    "cp_cost_baseline_eur",
+    "on_time_rate",
+    "capacity_score"
+  ],
+  "categorical": [
+    "origin",
+    "destination_zone",
+    "carrier",
+    "service_level",
+    "ship_dow",
+    "ship_hour"
+  ],
+  "numeric": [
+    "distance_km",
+    "weight_kg",
+    "volume_m3",
+    "total_units",
+    "n_lines",
+    "p50_eta_h",
+    "p90_eta_h",
+    "delay_rate",
+    "cp_cost_baseline_eur",
+    "on_time_rate",
+    "capacity_score"
+  ],
+  "eta_model_path": "c:\\Users\\ahmed\\OneDrive\\Bureau\\Projet LogiOps360\\logiOps360\\logiOps360\\Transport\\ML\\RECO CARRIER MODEL\\eta_carrier_lgbm.joblib",
+  "cost_model_path": "c:\\Users\\ahmed\\OneDrive\\Bureau\\Projet LogiOps360\\logiOps360\\logiOps360\\Transport\\ML\\RECO CARRIER MODEL\\cost_lgbm.joblib",
+  "metrics": {
+    "eta": {
+      "valid": {
+        "mae": 2.058203226358424,
+        "rmse": 3.7011719440733293
+      },
+      "test": {
+        "mae": 2.1900592549633284,
+        "rmse": 3.9999944852016522
+      }
+    },
+    "cost": {
+      "valid": {
+        "mae": 1.4399831821661904,
+        "rmse": 5.956766543406812
+      },
+      "test": {
+        "mae": 1.7523252726016323,
+        "rmse": 8.635895916357356
+      }
+    }
+  },
+  "params": {
+    "n_estimators": 800,
+    "learning_rate": 0.03,
+    "num_leaves": 64,
+    "subsample": 0.9,
+    "colsample_bytree": 0.8,
+    "random_state": 42
+  },
+  "notes": "Ranking = pond\u00e9ration min-max sur cost_pred, eta_pred et risk (1-on_time_rate)."
+}
