@@ -4,29 +4,29 @@ import os
 import csv
 RAW_PATHS = {
     # Commandes
-    "logiops360/Commandes/Data/Customer_Order.csv": "raw_customer_orders",
-    "logiops360/Commandes/Data/Product.csv": "raw_products",
-    "logiops360/Commandes/Data/Picking_Wave.csv": "raw_picking_wave",
-    "logiops360/Commandes/Data/Supply_chain_logisitcs_problem.xlsx": {
+    "logiops360_back/Commandes/Data/Customer_Order.csv": "raw_customer_orders",
+    "logiops360_back/Commandes/Data/Product.csv": "raw_products",
+    "logiops360_back/Commandes/Data/Picking_Wave.csv": "raw_picking_wave",
+    "logiops360_back/Commandes/Data/Supply_chain_logisitcs_problem.xlsx": {
         None: "raw_supply_chain_problem",   
         "WhCosts": "raw_whcosts",
         "WhCapacities": "raw_whcapacities",
     },
-    "logiops360/Commandes/Data/supply_chain_data.xlsx": "raw_supply_chain_data",
+    "logiops360_back/Commandes/Data/supply_chain_data.xlsx": "raw_supply_chain_data",
  
     # Stockage
-    "logiops360/Stockage/Data/Class_Based_Storage.csv": "raw_class_based_storage",
-    "logiops360/Stockage/Data/Dedicated_Storage.csv": "raw_dedicated_storage",
-    "logiops360/Stockage/Data/Hybrid_Storage.csv": "raw_hybrid_storage",
-    "logiops360/Stockage/Data/Random_Storage.csv": "raw_random_storage",
-    "logiops360/Stockage/Data/Storage_Location.csv": "raw_storage_location",
-    "logiops360/Stockage/Data/Support_Points_Navigation.csv": "raw_support_points",
+    "logiops360_back/Stockage/Data/Class_Based_Storage.csv": "raw_class_based_storage",
+    "logiops360_back/Stockage/Data/Dedicated_Storage.csv": "raw_dedicated_storage",
+    "logiops360_back/Stockage/Data/Hybrid_Storage.csv": "raw_hybrid_storage",
+    "logiops360_back/Stockage/Data/Random_Storage.csv": "raw_random_storage",
+    "logiops360_back/Stockage/Data/Storage_Location.csv": "raw_storage_location",
+    "logiops360_back/Stockage/Data/Support_Points_Navigation.csv": "raw_support_points",
 
     # Transport
-    "logiops360/Transport/Data/Monthly_Modal_Time_Series.csv": "raw_monthly_modal",
-    "logiops360/Transport/Data/smart_logistics_dataset.csv": "raw_smart_logistics",
-    "logiops360/Transport/Data/Supply chain logisitcs problem.xlsx": "raw_supply_chain_problem_2",
-    "logiops360/Transport/Data/Transportation and Logistics Tracking Dataset..xlsx": "raw_transport_tracking"
+    "logiops360_back/Transport/Data/Monthly_Modal_Time_Series.csv": "raw_monthly_modal",
+    "logiops360_back/Transport/Data/smart_logistics_dataset.csv": "raw_smart_logistics",
+    "logiops360_back/Transport/Data/Supply chain logisitcs problem.xlsx": "raw_supply_chain_problem_2",
+    "logiops360_back/Transport/Data/Transportation and Logistics Tracking Dataset..xlsx": "raw_transport_tracking"
 }
  
  

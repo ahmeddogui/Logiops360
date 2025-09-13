@@ -15,7 +15,6 @@ if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 TRANSFORM_FUNCS = [
     "Commandes.Transformations.transform_customer_orders.transform_customer_orders",
-    "Commandes.Transformations.transform_picking_wave.transform_picking_wave",
     "Commandes.Transformations.transform_product.transform_product",
     "Commandes.Transformations.transform_supply_chain_problem.transform_supply_chain_problem"
 ]

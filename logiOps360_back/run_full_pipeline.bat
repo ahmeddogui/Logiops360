@@ -4,7 +4,7 @@ chcp 65001 >NUL
 set PYTHONUTF8=1
 
 REM === Paramètres projet ===
-set "PROJECT_ROOT=C:\Users\ahmed\OneDrive\Bureau\Projet LogiOps360\logiOps360\logiOps360"
+set "PROJECT_ROOT=C:\Users\ahmed\OneDrive\Bureau\Projet LogiOps360\logiOps360\LogiOps360 F\logiOps360_back"
 set "FULL_PIPELINE=%PROJECT_ROOT%\full_pipeline.py"
 set "MAILER=%PROJECT_ROOT%\Transport\send_mail.py"
 set "PYTHON=C:\Users\ahmed\AppData\Local\Programs\Python\Python312\python.exe"

@@ -4,10 +4,10 @@ from datetime import datetime
 
 # Liste des scripts à exécuter dans l'ordre
 SCRIPTS = [
-    r"C:\Users\ahmed\OneDrive\Bureau\Projet LogiOps360\logiOps360\logiOps360\ingestion_raw_data.py",
-    r"C:\Users\ahmed\OneDrive\Bureau\Projet LogiOps360\logiOps360\logiOps360\Commandes\Transformations\main_transform.py",
-    r"C:\Users\ahmed\OneDrive\Bureau\Projet LogiOps360\logiOps360\logiOps360\Stockage\Transformations\main_transform.py",
-    r"C:\Users\ahmed\OneDrive\Bureau\Projet LogiOps360\logiOps360\logiOps360\Transport\Transformations\main_transform.py",
+    r"C:\Users\ahmed\OneDrive\Bureau\Projet LogiOps360\logiOps360\LogiOps360 F\logiOps360_back\ingestion_raw_data.py",
+    r"C:\Users\ahmed\OneDrive\Bureau\Projet LogiOps360\logiOps360\LogiOps360 F\logiOps360_back\Commandes\Transformations\main_transform.py",
+    r"C:\Users\ahmed\OneDrive\Bureau\Projet LogiOps360\logiOps360\LogiOps360 F\logiOps360_back\Stockage\Transformations\main_transform.py",
+    r"C:\Users\ahmed\OneDrive\Bureau\Projet LogiOps360\logiOps360\LogiOps360 F\logiOps360_back\Transport\Transformations\main_transform.py",
 ]
 
 def run_script(script_path):
