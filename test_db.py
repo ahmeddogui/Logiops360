@@ -13,11 +13,11 @@ try:
         port=int(os.getenv("DB_PORT") or 5432),
         connect_timeout=5,
     )
-    print("✅ Connected to Postgres")
+    print("Connected to Postgres")
     cur = conn.cursor()
     cur.execute("SELECT 1;")
-    print("✅ Simple query OK:", cur.fetchone())
+    print("Simple query OK:", cur.fetchone())
     conn.close()
 except Exception as e:
-    print("❌ DB connect error:", repr(e))
+    print("DB connect error:", repr(e))
     sys.exit(1)
