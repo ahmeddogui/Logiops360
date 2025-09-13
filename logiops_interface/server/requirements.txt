@@ -9,3 +9,4 @@ pandas
 joblib
 scikit-learn
 lightgbm
+gunicorn==21.2.0
