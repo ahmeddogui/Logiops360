@@ -1,0 +1,22 @@
+name: Run ETL pipeline
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: "0 2 * * *"  # 02:00 UTC (~04:00 Paris l'été)
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run pipeline on server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          script: |
+            set -e
+            docker pull ghcr.io/${{ github.repository_owner }}/logiops_etl_jobs:latest
+            docker run --rm --env-file /opt/logiops360/.env ghcr.io/${{ github.repository_owner }}/logiops_etl_jobs:latest python full_pipeline.py

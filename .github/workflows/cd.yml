@@ -1,0 +1,56 @@
+name: CD
+on:
+  push: { branches: [ main ] }
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_WEB: ghcr.io/${{ github.repository_owner }}/logiops_interface_web
+  IMAGE_API: ghcr.io/${{ github.repository_owner }}/logiops_interface_api
+  IMAGE_ETL: ghcr.io/${{ github.repository_owner }}/logiops_etl_jobs
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Login GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build & push API
+        uses: docker/build-push-action@v6
+        with:
+          context: ./logiops_interface
+          file: ./logiops_interface/server/Dockerfile
+          push: true
+          tags: |
+            ${{ env.IMAGE_API }}:latest
+            ${{ env.IMAGE_API }}:${{ github.sha }}
+
+      - name: Build & push Web
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./logiops_interface/Dockerfile
+          push: true
+          tags: |
+            ${{ env.IMAGE_WEB }}:latest
+            ${{ env.IMAGE_WEB }}:${{ github.sha }}
+
+      - name: Build & push ETL
+        uses: docker/build-push-action@v6
+        with:
+          context: ./logiOps360_back
+          file: ./logiOps360_back/dockerfile
+          push: true
+          tags: |
+            ${{ env.IMAGE_ETL }}:latest
+            ${{ env.IMAGE_ETL }}:${{ github.sha }}
