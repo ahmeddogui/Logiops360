@@ -1,0 +1,67 @@
+{
+  "generated_at": "2025-08-31T12:03:51.844946Z",
+  "model_path": "c:\\Users\\ahmed\\OneDrive\\Bureau\\Projet LogiOps360\\logiOps360\\logiOps360\\Transport\\ML\\RISQUE RETARD MODEL\\delay_lgbm.joblib",
+  "features": [
+    "origin",
+    "destination_zone",
+    "carrier",
+    "service_level",
+    "ship_dow",
+    "ship_hour",
+    "distance_km",
+    "weight_kg",
+    "volume_m3",
+    "total_units",
+    "n_lines"
+  ],
+  "categorical": [
+    "origin",
+    "destination_zone",
+    "carrier",
+    "service_level",
+    "ship_dow",
+    "ship_hour"
+  ],
+  "numeric": [
+    "distance_km",
+    "weight_kg",
+    "volume_m3",
+    "total_units",
+    "n_lines"
+  ],
+  "target": "is_late",
+  "metrics": {
+    "valid": {
+      "auc": 0.7385093989939105,
+      "ap": 0.012282458523390273,
+      "best_threshold": 3.2118425483103686e-06,
+      "f1_at_thr": 0.02751322745175107
+    },
+    "test": {
+      "auc": 0.7723304166021372,
+      "ap": 0.013354051621580956,
+      "f1_at_thr": 0.02702702702702703,
+      "confusion_matrix": [
+        [
+          3988,
+          708
+        ],
+        [
+          12,
+          10
+        ]
+      ]
+    }
+  },
+  "algo": "LightGBMClassifier",
+  "params": {
+    "n_estimators": 1200,
+    "learning_rate": 0.03,
+    "num_leaves": 64,
+    "subsample": 0.9,
+    "colsample_bytree": 0.8,
+    "class_weight": "balanced",
+    "random_state": 42
+  },
+  "decision_threshold": 3.2118425483103686e-06
+}

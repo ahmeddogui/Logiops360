@@ -31,10 +31,10 @@ Thumbs.db
 # Fichiers volumineux (ajuste au besoin)
 data/
 datasets/
-models/
+
 outputs/
 logs/
-*.joblib
+
 *.pkl
 *.parquet
 *.db
