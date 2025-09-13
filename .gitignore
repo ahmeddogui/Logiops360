@@ -7,7 +7,7 @@ npm-debug.log*
 yarn-error.log*
 pnpm-lock.yaml
 yarn.lock
-package-lock.json
+
 
 # Python
 logiops_back/.venv/
