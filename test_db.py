@@ -21,3 +21,6 @@ try:
 except Exception as e:
     print("DB connect error:", repr(e))
     sys.exit(1)
+
+
+print("OK")
